@@ -1,62 +1,92 @@
 import { Spot } from "@/lib/types";
+import { Sparkle } from "./Decorations";
 
 const BADGE_STYLES: Record<string, string> = {
-  "Trending on TikTok": "bg-sunset/10 text-sunset border-sunset/25",
-  "Reddit local pick": "bg-ocean/10 text-ocean border-ocean/25",
-  "Local blog favorite": "bg-goldenrod/10 text-goldenrod border-goldenrod/25",
-  "Hidden gem": "bg-flamingo/10 text-flamingo border-flamingo/25",
-  "Classic must-see": "bg-canvas/5 text-canvas/60 border-canvas/15",
+  "Trending on TikTok": "bg-sunset text-canvas border-sunset",
+  "Reddit local pick": "bg-ocean text-canvas border-ocean",
+  "Local blog favorite": "bg-goldenrod text-midnight border-goldenrod",
+  "Hidden gem": "bg-flamingo text-midnight border-flamingo",
+  "Classic must-see": "bg-canvas text-midnight border-canvas",
+};
+
+const PRICE_TIER_LABELS: Record<string, string> = {
+  "$": "Free / cheap",
+  "$$": "Affordable",
+  "$$$": "Splurge",
+  "$$$$": "Bucket list",
 };
 
 export default function SpotCard({
   spot,
   showTravel = true,
+  index = 0,
 }: {
   spot: Spot;
   showTravel?: boolean;
+  index?: number;
 }) {
   const badgeStyle = BADGE_STYLES[spot.trending_badge] || BADGE_STYLES["Classic must-see"];
+  const priceLabel = PRICE_TIER_LABELS[spot.price_tier] || spot.price_tier;
+
+  // Subtle alternating tilt for postcard feel
+  const tilt = index % 2 === 0 ? "hover:-rotate-[0.4deg]" : "hover:rotate-[0.4deg]";
 
   return (
-    <div className="mb-7 group">
-      <div className="space-y-3">
-        <h4 className="font-serif text-[20px] font-medium text-canvas leading-[1.1] group-hover:text-flamingo transition-colors duration-300">
+    <article className={`group relative pl-4 -ml-4 border-l-2 border-canvas/0 hover:border-flamingo/40 transition-all duration-400 py-4 ${tilt}`}>
+      {/* Index marker */}
+      <span className="absolute -left-1 top-4 font-mono text-[10px] tracking-wider text-canvas/30 group-hover:text-flamingo transition-colors duration-300">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+
+      <div className="space-y-3 pl-4">
+        {/* Title */}
+        <h4 className="font-display text-[28px] leading-[1.05] text-canvas group-hover:text-flamingo transition-colors duration-400 tracking-[-0.02em]">
           {spot.name}
         </h4>
-        <p className="font-sans text-[14px] text-placeholder/70 leading-[1.5] tracking-[0.01em]">
+
+        {/* Description */}
+        <p className="font-serif text-[15px] text-canvas/60 leading-[1.5] tracking-wide max-w-[34ch]">
           {spot.description}
         </p>
 
-        <div className="font-condensed text-[12px] text-placeholder/40 tracking-wide">
-          ~{spot.time_at_spot_minutes} min · {spot.price_tier} · ~${spot.estimated_cost_usd_pp} pp
+        {/* Meta row */}
+        <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.15em] text-canvas/35 pt-1">
+          <span>~{spot.time_at_spot_minutes}min</span>
+          <span className="w-px h-3 bg-canvas/20" />
+          <span>{priceLabel}</span>
+          <span className="w-px h-3 bg-canvas/20" />
+          <span>~${spot.estimated_cost_usd_pp}</span>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 font-condensed text-[10px] font-semibold uppercase tracking-wide bg-goldenrod/10 text-goldenrod border border-goldenrod/20 rounded-sm">
+        {/* Stamps */}
+        <div className="flex items-center gap-2 flex-wrap pt-1">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide bg-goldenrod text-midnight border border-goldenrod sticker-tilt-l">
             ${spot.estimated_cost_usd_pp}
           </span>
-          <span className={`inline-flex items-center gap-1 px-2.5 py-1 font-condensed text-[10px] font-semibold uppercase tracking-wide border rounded-sm ${badgeStyle}`}>
+          <span className={`inline-flex items-center gap-1 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide border sticker-tilt-r ${badgeStyle}`}>
+            <Sparkle size={8} color="currentColor" className="align-middle" />
             {spot.trending_badge}
           </span>
         </div>
 
-        <div className="flex gap-2 mt-1.5 pt-1">
+        {/* Links */}
+        <div className="flex gap-1.5 pt-2 flex-wrap">
           <a
             href={spot.google_maps_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-canvas/10 font-condensed text-[11px] text-placeholder/50 hover:text-flamingo hover:border-flamingo/30 transition-all duration-300 hover:translate-y-[-1px]"
+            className="group/link inline-flex items-center gap-1.5 px-3 py-1.5 border border-canvas/15 font-mono text-[10px] uppercase tracking-wider text-canvas/60 hover:text-flamingo hover:border-flamingo/40 hover:bg-flamingo/5 transition-all duration-300"
           >
-            Maps
+            <span>↗</span> Maps
           </a>
           {spot.official_url && (
             <a
               href={spot.official_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-canvas/10 font-condensed text-[11px] text-placeholder/50 hover:text-flamingo hover:border-flamingo/30 transition-all duration-300 hover:translate-y-[-1px]"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-canvas/15 font-mono text-[10px] uppercase tracking-wider text-canvas/60 hover:text-flamingo hover:border-flamingo/40 hover:bg-flamingo/5 transition-all duration-300"
             >
-              Site
+              <span>↗</span> Site
             </a>
           )}
           {spot.booking_url && (
@@ -64,21 +94,22 @@ export default function SpotCard({
               href={spot.booking_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-canvas/10 font-condensed text-[11px] text-placeholder/50 hover:text-flamingo hover:border-flamingo/30 transition-all duration-300 hover:translate-y-[-1px]"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-canvas/15 font-mono text-[10px] uppercase tracking-wider text-canvas/60 hover:text-flamingo hover:border-flamingo/40 hover:bg-flamingo/5 transition-all duration-300"
             >
-              Book
+              <span>↗</span> Book
             </a>
           )}
         </div>
       </div>
 
+      {/* Travel to next */}
       {showTravel && spot.travel_to_next && (
-        <div className="mt-5 pl-4 border-l border-flamingo/15">
-          <p className="font-condensed text-[12px] italic text-placeholder/30 tracking-wide">
-            {spot.travel_to_next.minutes} min {spot.travel_to_next.mode} to next
-          </p>
+        <div className="mt-5 ml-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-canvas/30">
+          <span className="text-flamingo/60">↓</span>
+          <span>{spot.travel_to_next.minutes}min {spot.travel_to_next.mode}</span>
+          <span className="flex-1 h-px bg-gradient-to-r from-flamingo/20 to-transparent" />
         </div>
       )}
-    </div>
+    </article>
   );
 }

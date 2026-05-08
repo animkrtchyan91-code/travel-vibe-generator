@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, EB_Garamond, Barlow, Barlow_Condensed } from "next/font/google";
+import { Playfair_Display, EB_Garamond, Barlow, Barlow_Condensed, Instrument_Serif, Space_Mono } from "next/font/google";
 import "./globals.css";
 
 const playfairDisplay = Playfair_Display({
@@ -11,6 +11,7 @@ const playfairDisplay = Playfair_Display({
 const ebGaramond = EB_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
+  style: ["normal", "italic"],
   variable: "--font-eb-garamond",
 });
 
@@ -26,9 +27,22 @@ const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
 });
 
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
+});
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-space-mono",
+});
+
 export const metadata: Metadata = {
   title: "TRAVEL VIBE GENERATOR",
-  description: "AI-powered hyper-specific travel plans. Built with Claude × HUVA.",
+  description: "Hyper-specific travel plans, verified by AI. Built with Claude × HUVA.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -40,7 +54,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#000000",
+  themeColor: "#0a0a0a",
 };
 
 export default function RootLayout({
@@ -49,8 +63,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfairDisplay.variable} ${ebGaramond.variable} ${barlow.variable} ${barlowCondensed.variable}`}>
-      <body className="min-h-dvh font-sans bg-midnight text-canvas antialiased">
+    <html lang="en" className={`${playfairDisplay.variable} ${ebGaramond.variable} ${barlow.variable} ${barlowCondensed.variable} ${instrumentSerif.variable} ${spaceMono.variable}`}>
+      <body className="min-h-dvh font-sans bg-midnight text-canvas antialiased overflow-x-hidden">
         {children}
       </body>
     </html>

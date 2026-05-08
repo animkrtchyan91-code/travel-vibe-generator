@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { TripFormData } from "@/lib/types";
 import { useMultiReveal } from "@/hooks/useScrollReveal";
+import { Sparkle } from "@/components/Decorations";
 
 const VIBES = ["Chill", "Party", "Romantic", "Foodie", "Adventure", "Culture", "Hidden Gems"];
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -14,7 +15,7 @@ const BUDGET_RANGES: Record<string, string> = {
   luxury: "$200–$500",
 };
 
-function GhostButton({
+function StampButton({
   label,
   active,
   onClick,
@@ -27,10 +28,10 @@ function GhostButton({
     <button
       type="button"
       onClick={onClick}
-      className={`px-5 py-2.5 font-condensed text-[14px] font-medium tracking-[-0.02em] border transition-all duration-300 ${
+      className={`relative px-5 py-2.5 font-condensed text-[14px] font-medium tracking-wide uppercase border transition-all duration-300 ${
         active
-          ? "bg-canvas text-midnight border-canvas scale-[1.02]"
-          : "bg-transparent text-canvas border-canvas/20 hover:border-canvas/50 hover:scale-[1.02]"
+          ? "bg-canvas text-midnight border-canvas sticker"
+          : "bg-transparent text-canvas/80 border-canvas/20 hover:border-canvas/60 hover:text-canvas"
       }`}
     >
       {label}
@@ -50,42 +51,59 @@ function PillSelect({
   max: number;
 }) {
   const toggle = (opt: string) => {
-    if (selected.includes(opt)) {
-      onChange(selected.filter((s) => s !== opt));
-    } else if (selected.length < max) {
-      onChange([...selected, opt]);
-    }
+    if (selected.includes(opt)) onChange(selected.filter((s) => s !== opt));
+    else if (selected.length < max) onChange([...selected, opt]);
   };
 
   return (
-    <div className="flex gap-2.5 flex-wrap">
-      {options.map((opt) => (
-        <button
-          key={opt}
-          type="button"
-          onClick={() => toggle(opt)}
-          className={`px-5 py-2 font-condensed text-[14px] font-medium rounded-full border transition-all duration-300 ${
-            selected.includes(opt)
-              ? "bg-flamingo/15 text-flamingo border-flamingo/40 scale-[1.02]"
-              : "bg-transparent text-canvas/70 border-canvas/20 hover:border-canvas/40 hover:text-canvas hover:scale-[1.02]"
-          }`}
-        >
-          {opt}
-        </button>
-      ))}
+    <div className="flex gap-2 flex-wrap">
+      {options.map((opt) => {
+        const isActive = selected.includes(opt);
+        return (
+          <button
+            key={opt}
+            type="button"
+            onClick={() => toggle(opt)}
+            className={`relative px-4 py-2 font-condensed text-[13px] font-medium uppercase tracking-wide border transition-all duration-300 ${
+              isActive
+                ? "bg-flamingo text-midnight border-flamingo sticker"
+                : "bg-transparent text-canvas/70 border-canvas/20 hover:border-canvas/50 hover:text-canvas"
+            }`}
+          >
+            {isActive && <Sparkle size={10} color="currentColor" className="inline-block mr-1.5 align-middle" />}
+            {opt}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-function FormSection({ label, children, index }: { label: string; children: React.ReactNode; index: number }) {
+function NumberedSection({
+  number,
+  label,
+  hint,
+  children,
+}: {
+  number: string;
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="reveal" style={{ animationDelay: `${index * 60}ms` }}>
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-4 h-[1px] bg-flamingo/40" />
-        <label className="font-condensed text-[12px] font-semibold uppercase tracking-[0.15em] text-placeholder">
+    <div className="reveal">
+      <div className="flex items-baseline gap-3 mb-5">
+        <span className="font-mono text-[11px] tracking-widest text-flamingo/80">{number}</span>
+        <span className="flex-1 h-[1px] bg-canvas/15" />
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-canvas/50">
           {label}
-        </label>
+        </span>
       </div>
+      {hint && (
+        <p className="font-serif italic text-[15px] text-canvas/55 -mt-2 mb-4 leading-snug">
+          {hint}
+        </p>
+      )}
       {children}
     </div>
   );
@@ -130,29 +148,29 @@ export default function InputForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-11">
-      <FormSection label="Where" index={0}>
+    <form onSubmit={handleSubmit} className="space-y-12">
+      <NumberedSection number="01" label="Destination" hint="The place that's been on your list.">
         <input
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
           placeholder="Lisbon, Tokyo, Mexico City..."
-          className="w-full py-3 text-[18px] font-serif italic bg-transparent border-b border-canvas/20 focus:border-flamingo placeholder:text-placeholder/30 tracking-[0.01em] transition-colors duration-300"
+          className="w-full py-3 text-[24px] font-display italic bg-transparent border-b-2 border-canvas/15 focus:border-flamingo placeholder:text-placeholder/30 transition-colors duration-300"
           required
         />
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="How many days" index={1}>
-        <div className="flex gap-2 flex-wrap stagger-children visible">
+      <NumberedSection number="02" label="Duration">
+        <div className="flex gap-1.5 flex-wrap">
           {[1, 2, 3, 4, 5, 6, 7].map((d) => (
             <button
               key={d}
               type="button"
               onClick={() => { setDays(d); setCustomDays(false); }}
-              className={`w-12 h-12 font-condensed text-[15px] font-medium border transition-all duration-300 ${
+              className={`w-12 h-12 font-display text-[20px] border transition-all duration-300 ${
                 days === d && !customDays
-                  ? "bg-canvas text-midnight border-canvas"
-                  : "bg-transparent text-canvas/60 border-canvas/15 hover:border-canvas/40 hover:text-canvas"
+                  ? "bg-canvas text-midnight border-canvas sticker"
+                  : "bg-transparent text-canvas/50 border-canvas/15 hover:border-canvas/40 hover:text-canvas"
               }`}
             >
               {d}
@@ -161,10 +179,10 @@ export default function InputForm({
           <button
             type="button"
             onClick={() => { setCustomDays(true); setDays(8); }}
-            className={`px-4 h-12 font-condensed text-[15px] font-medium border transition-all duration-300 ${
+            className={`px-3 h-12 font-condensed text-[12px] uppercase tracking-wider border transition-all duration-300 ${
               customDays
-                ? "bg-canvas text-midnight border-canvas"
-                : "bg-transparent text-canvas/60 border-canvas/15 hover:border-canvas/40 hover:text-canvas"
+                ? "bg-canvas text-midnight border-canvas sticker"
+                : "bg-transparent text-canvas/50 border-canvas/15 hover:border-canvas/40 hover:text-canvas"
             }`}
           >
             8+
@@ -177,19 +195,19 @@ export default function InputForm({
             max={30}
             value={days}
             onChange={(e) => setDays(Number(e.target.value))}
-            className="mt-3 w-24 py-2 text-[14px] font-sans bg-transparent border-b border-canvas/20 focus:border-flamingo transition-colors duration-300"
+            className="mt-3 w-24 py-2 text-[16px] font-display bg-transparent border-b border-canvas/20 focus:border-flamingo"
           />
         )}
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="Is this your first time?" index={2}>
-        <div className="flex gap-2.5 flex-wrap">
+      <NumberedSection number="03" label="First time?">
+        <div className="flex gap-2 flex-wrap">
           {[
             { label: "First time", value: "first_time" },
             { label: "Been before", value: "been_before" },
             { label: "I live here", value: "live_here" },
           ].map((opt) => (
-            <GhostButton
+            <StampButton
               key={opt.value}
               label={opt.label}
               active={tripType === opt.value}
@@ -197,21 +215,20 @@ export default function InputForm({
             />
           ))}
         </div>
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="The vibe" index={3}>
+      <NumberedSection number="04" label="The vibe" hint="Pick up to three. Be greedy.">
         <PillSelect options={VIBES} selected={vibes} onChange={setVibes} max={3} />
-        <p className="font-condensed text-[12px] text-placeholder/40 mt-2.5 tracking-wide">pick up to 3</p>
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="Pace" index={4}>
-        <div className="flex gap-2.5 flex-wrap">
+      <NumberedSection number="05" label="Pace">
+        <div className="flex gap-2 flex-wrap">
           {[
             { label: "Slow", value: "slow" },
             { label: "Balanced", value: "balanced" },
             { label: "Packed", value: "packed" },
           ].map((opt) => (
-            <GhostButton
+            <StampButton
               key={opt.value}
               label={opt.label}
               active={pace === opt.value}
@@ -219,29 +236,29 @@ export default function InputForm({
             />
           ))}
         </div>
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="Who with" index={5}>
+      <NumberedSection number="06" label="Who with">
         <select
           value={travelStyle}
           onChange={(e) => setTravelStyle(e.target.value)}
-          className="w-full py-3 text-[16px] font-serif italic bg-transparent border-b border-canvas/20 focus:border-flamingo transition-colors duration-300"
+          className="w-full py-3 text-[18px] font-serif italic bg-transparent border-b border-canvas/15 focus:border-flamingo transition-colors duration-300"
         >
-          <option value="solo">Solo</option>
-          <option value="couple">Couple</option>
-          <option value="family">Family</option>
-          <option value="friends">Friends</option>
+          <option value="solo">Solo — by myself</option>
+          <option value="couple">Couple — two of us</option>
+          <option value="family">Family — kids in tow</option>
+          <option value="friends">Friends — crew of us</option>
         </select>
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="Budget tier" index={6}>
-        <div className="flex gap-2.5 flex-wrap">
+      <NumberedSection number="07" label="Budget tier">
+        <div className="flex gap-2 flex-wrap">
           {[
             { label: "Backpacker", value: "backpacker" },
             { label: "Mid", value: "mid" },
             { label: "Luxury", value: "luxury" },
           ].map((opt) => (
-            <GhostButton
+            <StampButton
               key={opt.value}
               label={opt.label}
               active={budgetTier === opt.value}
@@ -249,33 +266,34 @@ export default function InputForm({
             />
           ))}
         </div>
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="Daily budget" index={7}>
-        <div className="flex items-baseline gap-2">
-          <span className="text-flamingo/60 font-display text-[24px]">$</span>
+      <NumberedSection number="08" label="Daily budget">
+        <div className="flex items-baseline gap-3">
+          <span className="text-flamingo font-display text-[36px] leading-none">$</span>
           <input
             type="number"
             min={10}
             max={2000}
             value={dailyBudget}
             onChange={(e) => setDailyBudget(Number(e.target.value))}
-            className="w-28 py-2 text-[18px] font-serif bg-transparent border-b border-canvas/20 focus:border-flamingo transition-colors duration-300"
+            className="w-32 py-2 text-[28px] font-display bg-transparent border-b border-canvas/15 focus:border-flamingo transition-colors duration-300"
           />
+          <span className="font-mono text-[11px] uppercase tracking-wider text-canvas/40">/ day</span>
         </div>
-        <p className="font-condensed text-[12px] text-placeholder/40 mt-2 tracking-wide">
-          typical for {budgetTier}: {BUDGET_RANGES[budgetTier]}
+        <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-canvas/40 mt-3">
+          Typical {budgetTier}: <span className="text-flamingo">{BUDGET_RANGES[budgetTier]}</span>
         </p>
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="Walking" index={8}>
-        <div className="flex gap-2.5 flex-wrap">
+      <NumberedSection number="09" label="Walking tolerance">
+        <div className="flex gap-2 flex-wrap">
           {[
             { label: "Minimal", value: "minimal" },
             { label: "Moderate", value: "moderate" },
             { label: "Lots", value: "lots" },
           ].map((opt) => (
-            <GhostButton
+            <StampButton
               key={opt.value}
               label={opt.label}
               active={walking === opt.value}
@@ -283,9 +301,9 @@ export default function InputForm({
             />
           ))}
         </div>
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="Dietary" index={9}>
+      <NumberedSection number="10" label="Dietary">
         <PillSelect
           options={DIETARY_OPTIONS}
           selected={dietary}
@@ -293,15 +311,17 @@ export default function InputForm({
           max={5}
         />
         {dietary.length === 0 && (
-          <p className="font-condensed text-[12px] text-placeholder/40 mt-2 tracking-wide">none selected = no restrictions</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-canvas/40 mt-3">
+            None selected — no restrictions
+          </p>
         )}
-      </FormSection>
+      </NumberedSection>
 
-      <FormSection label="When" index={10}>
+      <NumberedSection number="11" label="When">
         <select
           value={month}
           onChange={(e) => setMonth(e.target.value)}
-          className="w-full py-3 text-[16px] font-serif italic bg-transparent border-b border-canvas/20 focus:border-flamingo transition-colors duration-300"
+          className="w-full py-3 text-[18px] font-serif italic bg-transparent border-b border-canvas/15 focus:border-flamingo transition-colors duration-300"
         >
           {MONTHS.map((m) => (
             <option key={m} value={m}>
@@ -309,18 +329,25 @@ export default function InputForm({
             </option>
           ))}
         </select>
-      </FormSection>
+      </NumberedSection>
 
-      <div className="h-24" />
+      <div className="h-32" />
 
-      <div className="fixed bottom-0 left-0 right-0 p-5 bg-midnight/95 backdrop-blur-md border-t border-canvas/8 z-50">
+      {/* Sticky CTA */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-midnight/95 backdrop-blur-md border-t border-canvas/8 z-50">
         <button
           type="submit"
           disabled={!city.trim()}
-          className="w-full py-4 bg-transparent text-canvas font-condensed text-[16px] font-semibold uppercase tracking-[0.12em] border border-canvas/80 hover:bg-canvas hover:text-midnight disabled:opacity-15 disabled:cursor-not-allowed transition-all duration-400 btn-shine"
+          className="group relative w-full py-5 bg-flamingo text-midnight font-display text-[22px] tracking-tight hover:bg-canvas disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-400 btn-shine border-2 border-flamingo overflow-hidden"
         >
-          Generate my trip →
+          <span className="relative z-10 flex items-center justify-center gap-3">
+            Generate my trip
+            <span className="font-serif italic text-flamingo group-hover:translate-x-1 transition-transform duration-300">→</span>
+          </span>
         </button>
+        <p className="text-center font-mono text-[9px] uppercase tracking-[0.3em] text-canvas/30 mt-2">
+          Verified by Claude · ~60 seconds
+        </p>
       </div>
     </form>
   );
