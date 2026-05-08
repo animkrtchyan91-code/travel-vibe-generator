@@ -116,7 +116,7 @@ export async function generateTrip(formData: {
   ];
 
   let response = await anthropic.messages.create({
-    model: "claude-sonnet-4-6",
+    model: "claude-haiku-4-5-20251001",
     max_tokens: 12000,
     system: SYSTEM_PROMPT,
     tools: [
@@ -205,7 +205,7 @@ export async function generateTrip(formData: {
     ];
 
     const retryResponse = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 12000,
       system: SYSTEM_PROMPT,
       messages: retryMessages,
