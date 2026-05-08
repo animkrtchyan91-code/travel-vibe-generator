@@ -3,6 +3,9 @@ import { generateTrip } from "@/lib/claude";
 import { setTrip, generateId } from "@/lib/cache";
 import { TripPlan } from "@/lib/types";
 
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
