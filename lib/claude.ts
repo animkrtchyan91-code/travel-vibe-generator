@@ -189,9 +189,14 @@ export async function generateTrip(formData: {
     return JSON.parse(cleanJson(textBlock.text));
   } catch (firstErr) {
     console.error("First JSON parse failed:", firstErr);
+    // Filter out server tool blocks — they need to be paired and only
+    // make sense in the original tool-enabled context.
+    const cleanContent = response.content.filter(
+      (b) => b.type === "text"
+    );
     const retryMessages: Anthropic.MessageParam[] = [
       ...messages,
-      { role: "assistant", content: response.content },
+      { role: "assistant", content: cleanContent },
       {
         role: "user",
         content:
@@ -201,7 +206,7 @@ export async function generateTrip(formData: {
 
     const retryResponse = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 16000,
+      max_tokens: 12000,
       system: SYSTEM_PROMPT,
       messages: retryMessages,
     });
