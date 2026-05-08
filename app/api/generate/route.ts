@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
 import { generateTrip } from "@/lib/claude";
-import { setTrip, generateId } from "@/lib/cache";
 import { TripPlan } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -45,10 +44,7 @@ export async function POST(request: NextRequest) {
       dietary: dietary || [],
     });
 
-    const id = generateId();
-    setTrip(id, result as TripPlan);
-
-    return Response.json({ id });
+    return Response.json({ trip: result as TripPlan });
   } catch (error) {
     console.error("Generation error:", error);
     return Response.json(

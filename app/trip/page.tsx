@@ -83,14 +83,30 @@ function TripContent() {
   useMultiReveal(".reveal", [trip]);
 
   useEffect(() => {
-    const url = demo === "1" ? "/api/trip?demo=1" : `/api/trip?id=${id}`;
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error("Trip not found");
-        return res.json();
-      })
-      .then(setTrip)
-      .catch((err) => setError(err.message));
+    if (demo === "1") {
+      fetch("/api/trip?demo=1")
+        .then((res) => {
+          if (!res.ok) throw new Error("Trip not found");
+          return res.json();
+        })
+        .then(setTrip)
+        .catch((err) => setError(err.message));
+      return;
+    }
+    if (!id) {
+      setError("No trip ID provided");
+      return;
+    }
+    const stored = sessionStorage.getItem(`trip:${id}`);
+    if (stored) {
+      try {
+        setTrip(JSON.parse(stored));
+      } catch {
+        setError("Could not load trip data");
+      }
+    } else {
+      setError("Trip not found. It may have expired or you opened this link in a new browser.");
+    }
   }, [id, demo]);
 
   useEffect(() => {

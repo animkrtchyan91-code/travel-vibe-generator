@@ -40,7 +40,9 @@ export default function Home() {
         const err = await res.json();
         throw new Error(err.error || "Generation failed");
       }
-      const { id } = await res.json();
+      const { trip } = await res.json();
+      const id = Math.random().toString(36).substring(2, 10);
+      sessionStorage.setItem(`trip:${id}`, JSON.stringify(trip));
       window.location.href = `/trip?id=${id}`;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
