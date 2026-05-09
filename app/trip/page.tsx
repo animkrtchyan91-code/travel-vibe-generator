@@ -303,7 +303,7 @@ function TripContent() {
               The <span className="italic text-goldenrod">map</span>.
             </h2>
           </div>
-          <div className="border-2 border-canvas/15 sticker">
+          <div className="border-2 border-canvas/15">
             <TripMap days={trip.days} />
           </div>
         </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Day } from "@/lib/types";
 
 const DAY_COLORS = ["#ffc2f7", "#ec542d", "#ebb70b", "#0b50b8", "#fe5c5d"];
@@ -72,6 +72,12 @@ function MapInner({ days }: { days: Day[] }) {
       zoom={12}
       className="w-full h-[400px] z-0"
       scrollWheelZoom={false}
+      whenReady={() => {
+        // Force tile recalc after mount
+        setTimeout(() => {
+          window.dispatchEvent(new Event("resize"));
+        }, 100);
+      }}
     >
       <TileLayer
         attribution='&copy; <a href="https://carto.com">CARTO</a>'
