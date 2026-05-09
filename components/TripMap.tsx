@@ -44,8 +44,6 @@ function MapInner({ days }: { days: Day[] }) {
         Popup: mod.Popup,
       });
     });
-
-    import("leaflet/dist/leaflet.css");
   }, []);
 
   if (!leaflet) {

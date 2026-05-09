@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, EB_Garamond, Barlow, Barlow_Condensed, Instrument_Serif, Space_Mono } from "next/font/google";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 const playfairDisplay = Playfair_Display({
